@@ -1,0 +1,28 @@
+{
+  "name": "image_stitcher",
+  "version": "1.0.0",
+  "description": "A tool to stitch together PDF pages into one large image.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ebensh/image_stitcher.git"
+  },
+  "keywords": [
+    "pdf",
+    "image",
+    "stitcher"
+  ],
+  "author": "Evan B",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ebensh/image_stitcher/issues"
+  },
+  "homepage": "https://github.com/ebensh/image_stitcher#readme",
+  "dependencies": {
+    "node-pdftk": "^2.0.0",
+    "vue": "^2.5.17"
+  }
+}
