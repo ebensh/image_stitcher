@@ -3,11 +3,11 @@
 const http = require('http');
 const port = 3000;
 
-const requestHandler = (request, response) => {
-  console.log(request.url)
+const requestHandler = (req, res) => {
+  console.log(req.url)
   res.statusCode = 200;
   res.setHeader('Content-Type', 'text/plain');
-  response.end('Hello World!\n')
+  res.end('Hello World!\n')
 }
 const server = http.createServer(requestHandler)
 
