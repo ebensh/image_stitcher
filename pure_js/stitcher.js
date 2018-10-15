@@ -3,8 +3,8 @@
 
 
 // TODO: replace with PDF.js or similar to get pages.
-var page_paths = ["imgs/page_01.png", "imgs/page_02.png",
-                  "imgs/page_03.png", "imgs/page_04.png"]
+var page_paths = ["imgs/page_02.png", "imgs/page_03.png",
+                  "imgs/page_05.png", "imgs/page_06.png"]
 var small_page_imgs = []
 var NUM_ROWS = 2;
 var NUM_COLS = 2;
