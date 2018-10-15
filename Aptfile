@@ -1,2 +1,2 @@
-pdftk
+pdftk-java
 :repo:deb http://cz.archive.ubuntu.com/ubuntu bionic main universe
