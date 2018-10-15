@@ -1,7 +1,7 @@
 // Just a hello world default for now.
 
 const http = require('http');
-const port = 3000;
+const port = 80;  // Heroku requires port 80
 
 const requestHandler = (req, res) => {
   console.log(req.url)
