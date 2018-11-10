@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>Drag-and-Drop Image Stitching</title>
+  <link rel="stylesheet" href="stitcher.css">
+</head>
+<body onload="init();">
+  Do something with: {{pages}}
+  <table>
+    <caption>Images from PDF</caption>
+    <tbody>
+      <tr>
+        <td id="small_pages">
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <table id="layout">
+    <caption>Layout</caption>
+    <tbody></tbody>
+  </table>
+
+  <h3>TODO: Spacing Configuration</h3>
+
+  <h3>Joined</h3>
+  <canvas id="combined" width="300px" height="300px" border-style="solid"></canvas>
+
+  <script src="/public/javascripts/stitcher.js"></script>
+</body>
+</html>

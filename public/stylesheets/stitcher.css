@@ -1,0 +1,17 @@
+img.small_page {
+  width: 150px;
+  /*margin: -25px;*/
+  draggable: "true";
+}
+
+td.page_slot {
+  border: 1px;
+  border-style: dashed;
+  border-color: blue;
+  width: 100px;
+  height: 100px;
+}
+
+#combined {
+  border-style:solid;
+}
