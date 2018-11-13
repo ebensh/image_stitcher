@@ -1,5 +1,7 @@
+const child_process = require('child_process');
 const express = require('express');
 const formidable = require('formidable');
+const fs = require('fs');
 const mustacheExpress = require('mustache-express');
 const path = require('path');
 const PDFImage = require("pdf-image").PDFImage;
@@ -17,7 +19,7 @@ app.set('view engine', 'mustache');
 app.set('views', __dirname + '/views');
 
 // Serve anything in public folder as static content.
-app.use(express.static('public'));
+app.use('/public', express.static(__dirname + '/public'));
 
 // TODO: Replace local tmp storage on Heroku ephemeral filesystem
 // with Amazon S3 (or equivalent) storage service.
@@ -25,9 +27,9 @@ app.use(express.static('public'));
 // This handler will return a page's image (or really, any file in that
 // directory). We could use express middleware to serve the entire page
 // directory, but I'm expanding it here for learning purposes.
-app.get('/pages/:name', function(req, res, next) {
+app.get('/pages/:name/:demo?', function(req, res, next) {
   var options = {
-    root: path.join(__dirname, '/pages/'),
+    root: path.join(__dirname, '/pages/', req.params.demo ? 'demo/' : ''),
     dotfiles: 'deny',
     headers: {
         'x-timestamp': Date.now(),
@@ -58,14 +60,28 @@ app.post('/upload', function(req, res) {
 
   form.parse(req, function(err, fields, files) {
     let pdfPath = files.upload.path;
+    let firstPage = fields.firstpage;
+    let lastPage = fields.lastpage;
+    let basename = path.basename(pdfPath);
+    let directory = path.dirname(pdfPath);
     console.log('Received new uploaded PDF: ', pdfPath);
 
+    console.log(`Processing ${pdfPath} from ${firstPage} to ${lastPage}`);
     // TODO: Don't block this thread! Build some kind of work queue and
     // an offline process to do the heavy-lifting.
-    // child_process.execFile('pdftocairo', ['-png', files.upload.path, '-r', '150']);
+    // child_process.execFileSync('pdftocairo',
+    //     ['-png', pdfPath, '-r', '150', '-f', firstPage, '-l', lastPage]);
+    // var pages = fs.readdirSync(directory).filter(
+    //     filename => path.basename(filename) == basename
+    //         && filename.endsWith('.png'));
 
     let pdfImage = new PDFImage(pdfPath,
         {outputDirectory: path.join(__dirname, '/pages/')});
+    // This is super janky, but we want to use pdftocairo instead of
+    // imagemagick's conversion function.
+    //pdfImage.
+
+
     console.log('Processing...');
     pdfImage.convertFile().then(function (imagePaths) {
       console.log('Processed PDF, images:', imagePaths.join(', '));
@@ -77,8 +93,18 @@ app.post('/upload', function(req, res) {
           //"numpages": imagePaths.length
         }
      }));
-    }).catch((reason) => console.log("Couldn't process: ", reason));
+    }).catch(reason => console.log("Couldn't process: ", reason));
   });
+});
+
+// Redirect to /stitcher with some demo images.
+app.get('/stitcherdemo', function(req, res) {
+  pages = ['/pages/page_02.png/demo', '/pages/page_03.png/demo',
+           '/pages/page_05.png/demo', '/pages/page_06.png/demo'];
+  res.redirect(url.format({
+    pathname:"/stitcher",
+    query: { pages: pages }
+  }));
 });
 
 app.get('/stitcher', function(req, res) {

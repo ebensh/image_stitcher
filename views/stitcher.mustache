@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
   <title>Drag-and-Drop Image Stitching</title>
-  <link rel="stylesheet" href="stitcher.css">
+  <link rel="stylesheet" href="/public/stylesheets/stitcher.css">
 </head>
-<body onload="init();">
-  Do something with: {{pages}}
+{{- Triple braces to avoid escaping slashes }}
+<body onload="init([{{#pages}}'{{{.}}}', {{/pages}}]);">
   <table>
     <caption>Images from PDF</caption>
     <tbody>

@@ -1,10 +1,6 @@
-// Note: this breaks so many rules of single ownership it's not even funny...
-// But it kind of is funny, for a pure JS go at it :)
+// Note: this breaks so many rules of single ownership, but it's all for
+// the sake of learning ;)
 
-
-// TODO: replace with PDF.js or similar to get pages.
-var page_paths = ["imgs/page_02.png", "imgs/page_03.png",
-                  "imgs/page_05.png", "imgs/page_06.png"]
 var small_page_imgs = []
 var NUM_ROWS = 2;
 var NUM_COLS = 2;
@@ -18,10 +14,10 @@ function create2DArray(rows, cols) {
   return array;
 }
 
-function init() {
+function init(pages) {
   let small_pages = document.getElementById("small_pages");
   
-  page_paths.forEach(function(path, index) {
+  pages.forEach(function(path, index) {
     let small_page = new Image();
     small_page.id = "small_page" + index;
     small_page.src = path;
