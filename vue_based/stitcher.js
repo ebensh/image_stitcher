@@ -1,11 +1,3 @@
-// Note: this breaks so many rules of single ownership, but it's all for
-// the sake of learning ;)
-
-var small_page_imgs = []
-var NUM_ROWS = 2;
-var NUM_COLS = 2;
-var page_layout = create2DArray(NUM_ROWS, NUM_COLS);  // Stores page index
-
 function create2DArray(rows, cols) {
   array = Array(rows);
   for (let r = 0; r < rows; ++r) {
@@ -14,10 +6,46 @@ function create2DArray(rows, cols) {
   return array;
 }
 
+function setPages(pages) {
+  document.getElementById("pages").value = pages;
+}
+
+function setParameters() {
+  var num_rows = document.getElementById("layout_num_rows").value;
+  var num_cols = document.getElementById("layout_num_cols").value;
+  var join_horizontal_space = document.getElementById("join_horizontal_space").value;
+  var join_vertical_space = document.getElementById("join_vertical_space").value;
+  //layout_num_rows = document.getElementById("layout");
+}
+
+// The "model" of our MVC. It keeps track of the indices of which
+// images are in which slot. It can also translate those indices into
+// image source paths.
+function ImageLayout(pages, options) {
+  if (!options) options = {};
+
+  // Pages should be a list of image srcs.
+  this.pages = pages;
+
+  this.num_cols = options.num_cols || 4;
+  this.num_rows = options.num_rows || 1;
+  while (this.num_cols * this.num_rows < pages) {
+    this.num_rows++;
+  }
+
+  this.layout = create2DArray(this.num_rows, this.num_cols);
+  // Seed the layout with a naive ordering.
+  for (int i = 0; i < pages.length; ++i) {
+    let row = Math.floor(i / this.num_cols);
+    let col = i - row * this.num_cols;
+    this.layout[row][col] = i;
+  }
+}
+
 function init(pages) {
   let small_pages = document.getElementById("small_pages");
   
-  pages.forEach(function(path, index) {
+  page_paths.forEach(function(path, index) {
     let small_page = new Image();
     small_page.id = "small_page" + index;
     small_page.src = path;
@@ -94,7 +122,7 @@ function layout_drop_handler(ev) {
 
 function draw_joined() {
   // TODO: Parameterize.
-  let spacing_horizontal = 0;  // Typical values are 0, -25, -50, ...
+  let spacing_horizontal = 0;  // Typical values are 0, 25  50, 75, 100
   let spacing_vertical = 0;
 
   let canvas = document.getElementById("combined");

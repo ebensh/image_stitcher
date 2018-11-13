@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>Drag-and-Drop Image Stitching</title>
+  <link rel="stylesheet" href="stitcher.css">
+  <script>
+    // TODO: Parameterize using templates from server.
+    var pages = ["imgs/page_02.png", "imgs/page_03.png",
+                 "imgs/page_05.png", "imgs/page_06.png"]
+  </script>
+</head>
+<body onload="setPages(pages); setParameters();">
+  <h3>Layout and Joining Parameters</h3>
+  <table>
+    <tr>
+      <td>Pages</td>
+      <td><input id="pages" type="text" readonly="true"></td>
+    </tr><tr>
+      <td>Number of Layout Rows</td>
+      <td><input id="layout_num_rows" type="text" value=4></td>
+    </tr><tr>
+      <td>Number of Layout Columns</td>
+      <td><input id="layout_num_cols" type="text" value=4></td>
+    </tr><tr>
+      <td>Horizontal spacing in pixels (negative for overlap)*</td>
+      <td><input id="join_horizontal_space" type="text" value=-25></td>
+    </tr><tr>
+      <td>Vertical overlap in pixels (negative for overlap)*</td>
+      <td><input id="join_vertical_space" type="text" value=-25></td>
+    </tr><tr>
+      <td>* 150 pixels == 1 inch.</td>
+    </tr><tr>
+      <td><input id="set_parameters" type="button" value="Update Layout" onclick="setParameters();"</td>
+  </table>
+
+  <h3>Layout (drag and drop to move)</h3>
+
+  <table id="layout">
+    <tbody></tbody>
+  </table>
+
+  <h3>Joined View (Scaled Down)</h3>
+  <canvas id="combined" width="300px" height="300px" border-style="solid"></canvas>
+
+<script src="stitcher.js"></script>
+</body>
+</html>
