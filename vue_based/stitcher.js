@@ -1,3 +1,23 @@
+Vue.component('page-item', {
+  props: ['page'],
+  template: '<img :src="page.path"></img>'
+})
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    pages: [
+      { id: 0, path: 'imgs/page_02.png' },
+      { id: 1, path: 'imgs/page_03.png' },
+      { id: 2, path: 'imgs/page_05.png' },
+      { id: 3, path: 'imgs/page_06.png' }
+    ]
+  }
+})
+
+
+
+/*
 function create2DArray(rows, cols) {
   array = Array(rows);
   for (let r = 0; r < rows; ++r) {
@@ -150,3 +170,4 @@ function draw_joined() {
     });
   });
 }
+*/

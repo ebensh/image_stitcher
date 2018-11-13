@@ -3,13 +3,19 @@
 <head>
   <title>Drag-and-Drop Image Stitching</title>
   <link rel="stylesheet" href="stitcher.css">
-  <script>
-    // TODO: Parameterize using templates from server.
-    var pages = ["imgs/page_02.png", "imgs/page_03.png",
-                 "imgs/page_05.png", "imgs/page_06.png"]
-  </script>
+  <script src="../node_modules/vue/dist/vue.js"></script>
 </head>
-<body onload="setPages(pages); setParameters();">
+<body onload="">
+
+  <div id="app-7">
+    <page-item
+      v-for="item in pages"
+      v-bind:page="item"
+      v-bind:key="item.id">
+    </page-item>
+  </div>
+
+
   <h3>Layout and Joining Parameters</h3>
   <table>
     <tr>
@@ -42,6 +48,6 @@
   <h3>Joined View (Scaled Down)</h3>
   <canvas id="combined" width="300px" height="300px" border-style="solid"></canvas>
 
-<script src="stitcher.js"></script>
+  <script src="stitcher.js"></script>
 </body>
 </html>
