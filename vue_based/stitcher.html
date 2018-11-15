@@ -7,46 +7,48 @@
 </head>
 <body onload="">
 
-  <div id="app-7">
-    <page-item
+  <div id="app">
+    <small-page-item
       v-for="item in pages"
       v-bind:page="item"
       v-bind:key="item.id">
-    </page-item>
+    </small-page-item>
+
+    <h3>Layout and Joining Parameters</h3>
+    <table>
+      <tr>
+        <td>Number of Layout Rows</td>
+        <td><input v-model="layoutRows" id="layout-num-rows"></td>
+      </tr><tr>
+        <td>Number of Layout Columns</td>
+        <td><input v-model="layoutCols" id="layout-num-cols"></td>
+      </tr><tr>
+        <td>Horizontal spacing in pixels (negative for overlap)*</td>
+        <td><input v-model="spaceHorizontal" id="join-space-horizontal" type="text" value=-25></td>
+      </tr><tr>
+        <td>Vertical overlap in pixels (negative for overlap)*</td>
+        <td><input v-model="spaceVertical" id="join-space-vertical" type="text" value=-25></td>
+      </tr><tr>
+        <td>* 150 pixels == 1 inch.</td>
+      </tr>
+    </table>
+
+    <h3>Layout (drag and drop to move)</h3>
+
+    <table id="layout">
+      <tr v-for="layout_row in layout"><td>
+        <small-page-item
+          v-for="page_id in layout_row"
+          v-bind:page="pages[page_id]"
+          v-bind:key="page_id">
+          {{page_id !== null ? pages[page_id]["path"] : "none"}}
+        </small-page-item>
+      </td></tr>
+    </table>
+
+    <h3>Joined View (Scaled Down)</h3>
+    <canvas id="combined" width="300px" height="300px" border-style="solid"></canvas>
   </div>
-
-
-  <h3>Layout and Joining Parameters</h3>
-  <table>
-    <tr>
-      <td>Pages</td>
-      <td><input id="pages" type="text" readonly="true"></td>
-    </tr><tr>
-      <td>Number of Layout Rows</td>
-      <td><input id="layout_num_rows" type="text" value=4></td>
-    </tr><tr>
-      <td>Number of Layout Columns</td>
-      <td><input id="layout_num_cols" type="text" value=4></td>
-    </tr><tr>
-      <td>Horizontal spacing in pixels (negative for overlap)*</td>
-      <td><input id="join_horizontal_space" type="text" value=-25></td>
-    </tr><tr>
-      <td>Vertical overlap in pixels (negative for overlap)*</td>
-      <td><input id="join_vertical_space" type="text" value=-25></td>
-    </tr><tr>
-      <td>* 150 pixels == 1 inch.</td>
-    </tr><tr>
-      <td><input id="set_parameters" type="button" value="Update Layout" onclick="setParameters();"</td>
-  </table>
-
-  <h3>Layout (drag and drop to move)</h3>
-
-  <table id="layout">
-    <tbody></tbody>
-  </table>
-
-  <h3>Joined View (Scaled Down)</h3>
-  <canvas id="combined" width="300px" height="300px" border-style="solid"></canvas>
 
   <script src="stitcher.js"></script>
 </body>

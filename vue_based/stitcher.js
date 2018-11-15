@@ -1,30 +1,47 @@
-Vue.component('page-item', {
+function create2DArray(rows, cols) {
+  array = Array(rows);
+  for (let r = 0; r < rows; ++r) {
+    array[r] = Array(cols).fill(0);
+  }
+  return array;
+}
+
+Vue.component('small-page-item', {
   props: ['page'],
-  template: '<img :src="page.path"></img>'
-})
+  template: '<img :src="page.path" width="100px"></img>'
+});
+
+var data = {
+  pages: {
+    0: { path: null },
+    1: { path: 'imgs/page_02.png' },
+    2: { path: 'imgs/page_03.png' },
+    3: { path: 'imgs/page_05.png' },
+    4: { path: 'imgs/page_06.png' }
+  },
+  layoutRows: 3,
+  layoutCols: 4,
+  spaceHorizontal: -25,
+  spaceVertical: -25,
+  layout: [[]],
+};
+
+data.layout = create2DArray(data.layoutRows, data.layoutCols);
+// Set up some initial values.
+data.layout[0][0] = 1
+data.layout[0][1] = 2
+data.layout[1][0] = 3
+data.layout[1][1] = 4
 
 var app = new Vue({
   el: '#app',
-  data: {
-    pages: [
-      { id: 0, path: 'imgs/page_02.png' },
-      { id: 1, path: 'imgs/page_03.png' },
-      { id: 2, path: 'imgs/page_05.png' },
-      { id: 3, path: 'imgs/page_06.png' }
-    ]
-  }
-})
+  data: data,
+});
 
 
 
 /*
-function create2DArray(rows, cols) {
-  array = Array(rows);
-  for (let r = 0; r < rows; ++r) {
-    array[r] = Array(cols).fill(null);
-  }
-  return array;
-}
+
 
 function setPages(pages) {
   document.getElementById("pages").value = pages;
