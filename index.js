@@ -2,6 +2,7 @@ const child_process = require('child_process');
 const express = require('express');
 const formidable = require('formidable');
 const fs = require('fs');
+const iconv = require('iconv-lite');
 const mustacheExpress = require('mustache-express');
 const path = require('path');
 const PDFImage = require("pdf-image").PDFImage;
@@ -84,13 +85,18 @@ app.post('/upload', function(req, res) {
 
     console.log('Processing...');
     pdfImage.convertFile().then(function (imagePaths) {
-      console.log('Processed PDF, images:', imagePaths.join(', '));
+      // Parse the path to create a dictionary from page # to path.
+      pages = new Object();
+      for (let path in imagePath) {
+        let id = /([0-9]+)\.png/.exec(path)[1];
+        pages[id] = path;
+      }
+
+      console.log('Processed PDF, images:', pages);
       res.redirect(url.format({
         pathname:"/stitcher",
         query: {
-          pages: imagePaths
-          //"basename": path.basename(imagePaths[0]).replace(/-[0-9]+$/, ""),
-          //"numpages": imagePaths.length
+          pages: iconv.encode(JSON.stringify(pages), 'utf-8').toString('base64')
         }
      }));
     }).catch(reason => console.log("Couldn't process: ", reason));
@@ -99,11 +105,20 @@ app.post('/upload', function(req, res) {
 
 // Redirect to /stitcher with some demo images.
 app.get('/stitcherdemo', function(req, res) {
-  pages = ['/pages/page_02.png/demo', '/pages/page_03.png/demo',
-           '/pages/page_05.png/demo', '/pages/page_06.png/demo'];
+  pages = {
+    2: '/pages/page_02.png/demo',
+    3: '/pages/page_03.png/demo',
+    5: '/pages/page_05.png/demo',
+    6: '/pages/page_06.png/demo'
+  };
+  console.log('pages: ', pages);
+  console.log('  in json: ', JSON.stringify(pages));
+  console.log('  in json in base64: ', iconv.encode(JSON.stringify(pages), 'utf-8').toString('base64'));
   res.redirect(url.format({
     pathname:"/stitcher",
-    query: { pages: pages }
+    query: {
+      pages: iconv.encode(JSON.stringify(pages), 'utf-8').toString('base64')
+    }
   }));
 });
 
@@ -113,7 +128,7 @@ app.get('/stitcher', function(req, res) {
     res.redirect('/upload')
   }
 
-  res.render('stitcher', {pages: pages});
+  res.render('stitcher');
 });
 
 app.listen(port, function () {

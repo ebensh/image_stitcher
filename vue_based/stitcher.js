@@ -11,20 +11,31 @@ Vue.component('small-page-item', {
   template: '<img :src="page.path" width="100px"></img>'
 });
 
+function getPagesFromURL() {
+  let url = new URL(window.location.href);
+  if (!url) { return null; }
+  let serialized_pages = url.searchParams.get('pages');
+  if (!serialized_pages) { return null; }
+  return btoa(JSON.parse(serialized_pages));
+}
+
 var data = {
-  pages: {
-    0: { path: null },
-    1: { path: 'imgs/page_02.png' },
-    2: { path: 'imgs/page_03.png' },
-    3: { path: 'imgs/page_05.png' },
-    4: { path: 'imgs/page_06.png' }
-  },
+  pages: getPagesFromURL();
   layoutRows: 3,
   layoutCols: 4,
   spaceHorizontal: -25,
   spaceVertical: -25,
   layout: [[]],
 };
+
+// For test:
+// data.pages = {
+//     0: { path: null },
+//     1: { path: 'imgs/page_02.png' },
+//     2: { path: 'imgs/page_03.png' },
+//     3: { path: 'imgs/page_05.png' },
+//     4: { path: 'imgs/page_06.png' }
+//   };
 
 data.layout = create2DArray(data.layoutRows, data.layoutCols);
 // Set up some initial values.
