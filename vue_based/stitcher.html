@@ -27,7 +27,6 @@
     </small-page-item>-->
 
     <table>
-      <tr><td>Header</td></tr>
       <tr v-for="(row, row_index) in pageLayout">
         <td v-for="(page_index, col_index) in row"
             class="page_slot"
@@ -46,27 +45,27 @@
           </small-page-layout-img>
         </td>
       </tr>
-      <tr><td>Footer</td></tr>
     </table>
 
     <h3>Joining Parameters</h3>
     <table>
       <tr>
         <td>Horizontal spacing in pixels (negative for overlap)*</td>
-        <td><input v-model="spaceHorizontal" @change="updateRender" id="join-space-horizontal" type="text" value=-25></td>
+        <td><input v-model="stitchSpaceHorizontal" @change="updateRender" id="stitch-space-horizontal" type="text"></td>
       </tr><tr>
         <td>Vertical overlap in pixels (negative for overlap)*</td>
-        <td><input v-model="spaceVertical" @change="updateRender" id="join-space-vertical" type="text" value=-25></td>
+        <td><input v-model="stitchSpaceVertical" @change="updateRender" id="stitch-space-vertical" type="text"></td>
       </tr><tr>
+        <td>Display Scale (Set to 1.0 for final image)</td>
+        <td><input v-model="stitchScale" @change="updateRender" id="stitch-scale" type="text"></td>
+      <tr>
         <td>* 150 pixels == 1 inch.</td>
       </tr>
     </table>
 
     <h3>Stitched View (Scaled Down)</h3>
 
-    <stitched-view v-bind:pages="pages" v-bind:pageLayout="pageLayout">
-    </stitched-view>
-    <canvas v-model="pageLayout" id="combined" width="300px" height="300px" border-style="solid"></canvas>
+    <canvas id="combined" width="300px" height="300px" border-style="solid"></canvas>
   </div>
 
   <script src="stitcher.js"></script>
