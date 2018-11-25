@@ -8,46 +8,65 @@
 <body onload="">
 
   <div id="app">
-    <small-page-item
-      v-for="item in pages"
-      v-bind:page="item"
-      v-bind:key="item.id">
-    </small-page-item>
-
-    <h3>Layout and Joining Parameters</h3>
+    <h3>Layout Parameters</h3>
     <table>
       <tr>
         <td>Number of Layout Rows</td>
-        <td><input v-model="layoutRows" id="layout-num-rows"></td>
+        <td><input v-model="layoutRows" @change="updateLayout" id="layout-num-rows"></td>
       </tr><tr>
         <td>Number of Layout Columns</td>
-        <td><input v-model="layoutCols" id="layout-num-cols"></td>
-      </tr><tr>
+        <td><input v-model="layoutCols" @change="updateLayout" id="layout-num-cols"></td>
+      </tr>
+    </table>
+
+    <h3>Layout (drag and drop to move)</h3>
+    <!--<small-page-item
+      v-for="item in pages"
+      v-bind:page="item"
+      v-bind:key="item.id">
+    </small-page-item>-->
+
+    <table>
+      <tr><td>Header</td></tr>
+      <tr v-for="(row, row_index) in pageLayout">
+        <td v-for="(page_index, col_index) in row"
+            class="page_slot"
+            ondragstart="layoutDragstartHandler(event)"
+            ondragover="layoutDragoverHandler(event)"
+            ondrop="layoutDropHandler(event)"
+            :data-rowindex="row_index"
+            :data-colindex="col_index"
+            :data-pageindex="page_index">
+          <small-page-layout-img
+            v-if="page_index"
+            v-bind:pages="pages"
+            v-bind:rowindex="row_index"
+            v-bind:colindex="col_index"
+            v-bind:pageindex="page_index">
+          </small-page-layout-img>
+        </td>
+      </tr>
+      <tr><td>Footer</td></tr>
+    </table>
+
+    <h3>Joining Parameters</h3>
+    <table>
+      <tr>
         <td>Horizontal spacing in pixels (negative for overlap)*</td>
-        <td><input v-model="spaceHorizontal" id="join-space-horizontal" type="text" value=-25></td>
+        <td><input v-model="spaceHorizontal" @change="updateRender" id="join-space-horizontal" type="text" value=-25></td>
       </tr><tr>
         <td>Vertical overlap in pixels (negative for overlap)*</td>
-        <td><input v-model="spaceVertical" id="join-space-vertical" type="text" value=-25></td>
+        <td><input v-model="spaceVertical" @change="updateRender" id="join-space-vertical" type="text" value=-25></td>
       </tr><tr>
         <td>* 150 pixels == 1 inch.</td>
       </tr>
     </table>
 
-    <h3>Layout (drag and drop to move)</h3>
+    <h3>Stitched View (Scaled Down)</h3>
 
-    <table id="layout">
-      <tr v-for="layout_row in layout"><td>
-        <small-page-item
-          v-for="page_id in layout_row"
-          v-bind:page="pages[page_id]"
-          v-bind:key="page_id">
-          {{page_id !== null ? pages[page_id]["path"] : "none"}}
-        </small-page-item>
-      </td></tr>
-    </table>
-
-    <h3>Joined View (Scaled Down)</h3>
-    <canvas id="combined" width="300px" height="300px" border-style="solid"></canvas>
+    <stitched-view v-bind:pages="pages" v-bind:pageLayout="pageLayout">
+    </stitched-view>
+    <canvas v-model="pageLayout" id="combined" width="300px" height="300px" border-style="solid"></canvas>
   </div>
 
   <script src="stitcher.js"></script>

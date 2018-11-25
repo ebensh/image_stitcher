@@ -1,4 +1,7 @@
+const kDebugging = true;
+
 function create2DArray(rows, cols) {
+  console.log("In create2DArray: ", rows, cols)
   array = Array(rows);
   for (let r = 0; r < rows; ++r) {
     array[r] = Array(cols).fill(0);
@@ -6,48 +9,139 @@ function create2DArray(rows, cols) {
   return array;
 }
 
+function layoutDragstartHandler(ev) {
+  // Note: we use "ev.currentTarget" instead of "ev.target" here because
+  // we want to capture the move element in our <td> or <div>, *not*
+  // the image itself.
+  target = ev.currentTarget;
+  console.log("Drag started from: ", target);
+
+  moveData = JSON.stringify({
+    rowindex: target.dataset.rowindex,
+    colindex: target.dataset.colindex,
+    pageindex: target.dataset.pageindex,
+  });
+
+  // Add the target's information to the dataTransfer object.
+  ev.dataTransfer.setData("text/plain", moveData);
+  // Stylize the drag effect so it looks like a move.
+  ev.dataTransfer.dropEffect = "move";
+}
+
+function layoutDragoverHandler(ev) {
+  ev.preventDefault();
+
+  // Stylize the drop effect so it looks like a move.
+  ev.dataTransfer.dropEffect = "move"
+}
+
+function layoutDropHandler(ev) {
+  ev.preventDefault();
+
+  // Note: we use "this" instead of "ev.target" here because we want to
+  // capture the move element in our <td> or <div>, *not* the image.
+  let src = JSON.parse(ev.dataTransfer.getData("text/plain"));
+  target = ev.currentTarget;
+  let dst = {
+    rowindex: target.dataset.rowindex,
+    colindex: target.dataset.colindex,
+    pageindex: target.dataset.pageindex,
+  };
+  console.log("Dragged ", src, " onto ", dst);
+
+  // Swap the two entries in the layout.
+  Vue.set(app.pageLayout[src.rowindex], src.colindex, parseInt(dst.pageindex));
+  Vue.set(app.pageLayout[dst.rowindex], dst.colindex, parseInt(src.pageindex));
+}
+
+
 Vue.component('small-page-item', {
   props: ['page'],
-  template: '<img :src="page.path" width="100px"></img>'
+  template: '<img :src="page.path" width="100px">'
+});
+
+Vue.component('small-page-layout-img', {
+  props: ['pages', 'rowindex', 'colindex', 'pageindex'],
+  template: `
+    <div>
+      <!--<span>{{rowindex}} {{colindex}} {{pageindex}}</span>-->
+      <img :src="pages[pageindex].path" width="100px">
+    </div>`
+});
+
+Vue.component('stitched-view', {
+  props: ['pages', 'pageLayout'],
+  template: `
+    <canvas width="300px" height="300px">`
 });
 
 function getPagesFromURL() {
+  if (kDebugging) {
+    return {
+      2: { path: 'imgs/page_02.png' },
+      3: { path: 'imgs/page_03.png' },
+      5: { path: 'imgs/page_05.png' },
+      6: { path: 'imgs/page_06.png' }
+    };
+  }
+
   let url = new URL(window.location.href);
   if (!url) { return null; }
   let serialized_pages = url.searchParams.get('pages');
   if (!serialized_pages) { return null; }
-  return btoa(JSON.parse(serialized_pages));
+  return JSON.parse(btoa(serialized_pages));
 }
-
-var data = {
-  pages: getPagesFromURL();
-  layoutRows: 3,
-  layoutCols: 4,
-  spaceHorizontal: -25,
-  spaceVertical: -25,
-  layout: [[]],
-};
-
-// For test:
-// data.pages = {
-//     0: { path: null },
-//     1: { path: 'imgs/page_02.png' },
-//     2: { path: 'imgs/page_03.png' },
-//     3: { path: 'imgs/page_05.png' },
-//     4: { path: 'imgs/page_06.png' }
-//   };
-
-data.layout = create2DArray(data.layoutRows, data.layoutCols);
-// Set up some initial values.
-data.layout[0][0] = 1
-data.layout[0][1] = 2
-data.layout[1][0] = 3
-data.layout[1][1] = 4
 
 var app = new Vue({
   el: '#app',
-  data: data,
+  data: {
+    pages: getPagesFromURL(),
+    layoutRows: 3,
+    layoutCols: 4,
+    spaceHorizontal: -25,
+    spaceVertical: -25,
+    pageLayout: create2DArray(3, 4)
+  },
+  methods: {
+    updateLayout: function (event) {
+      console.log("Updating layout :)");
+      if (app.pageLayout.length > app.layoutRows) {
+        app.pageLayout.splice(app.layoutRows);
+      }
+      while (app.pageLayout.length < app.layoutRows) {
+        app.pageLayout.push(Array(app.layoutCols).fill(0));
+      }
+
+      for (let r = 0; r < app.pageLayout.length; ++r) {
+        let row = app.pageLayout[r];
+        if (row.length > app.layoutCols) {
+          row.splice(app.layoutCols);
+        }
+        while (row.length < app.layoutCols) {
+          row.push(0);
+        }
+      }
+      console.log("New Layout: ", app.pageLayout);
+    },
+    updateRender: function (event) {
+      console.log("Updating render :)");
+    },
+  },
+  created() {
+    if (kDebugging) {
+      console.log("In created(), this:", this);
+
+      // We can't directly set the layout array's values, because Vue will
+      // not notice the update. Instead we must go through Vue.
+      Vue.set(this.pageLayout[0], 0, 2);
+      Vue.set(this.pageLayout[0], 1, 3);
+      Vue.set(this.pageLayout[1], 0, 6);
+      Vue.set(this.pageLayout[1], 1, 5);
+    }
+  }
 });
+
+
 
 
 
