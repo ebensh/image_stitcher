@@ -1,4 +1,4 @@
-const kDebugging = true;
+const kDebugging = false;
 
 function create2DArray(rows, cols) {
   console.log("In create2DArray: ", rows, cols)
@@ -6,6 +6,7 @@ function create2DArray(rows, cols) {
   for (let r = 0; r < rows; ++r) {
     array[r] = Array(cols).fill(0);
   }
+
   return array;
 }
 
@@ -143,10 +144,17 @@ function getPagesFromURL() {
   }
 
   let url = new URL(window.location.href);
-  if (!url) { return null; }
+  if (!url) { 
+    console.error("Could not get URL from window");
+    return;
+  }
   let serialized_pages = url.searchParams.get('pages');
-  if (!serialized_pages) { return null; }
-  return JSON.parse(btoa(serialized_pages));
+  if (!serialized_pages) {
+    console.error("Could not get serialized pages");
+    return null;
+  }
+  parsed_pages = JSON.parse(atob(serialized_pages));
+  return parsed_pages;
 }
 
 var app = new Vue({
@@ -163,6 +171,15 @@ var app = new Vue({
   methods: {
     updateLayout: function (event) {
       console.log("Updating layout :)");
+
+      // Don't let them go smaller than the number of pages.
+      if (app.layoutCols < 1) { app.layoutCols = 1; }
+      if (app.layoutRows < 1) { app.layoutRows = 1; }
+      while (app.layoutRows * app.layoutCols < app.pages.length) {
+        app.layoutRows++;
+        app.layoutCols++;
+      }
+
       if (app.pageLayout.length > app.layoutRows) {
         app.pageLayout.splice(app.layoutRows);
       }
@@ -192,20 +209,29 @@ var app = new Vue({
     }
   },
   created() {
-    if (kDebugging) {
-      console.log("In created(), this:", this);
+    // The pages data is loaded by now. We make sure the grid is large
+    // enough (increasing by 1 row and 1 col until it is), then insert
+    // the loaded images.
+    while (this.layoutRows * this.layoutCols < this.pages.length) {
+      this.layoutRows++;
+      this.layoutCols++;
+    }
 
-      // We can't directly set the layout array's values, because Vue will
-      // not notice the update. Instead we must go through Vue.
-      Vue.set(this.pageLayout[0], 0, 2);
-      Vue.set(this.pageLayout[0], 1, 3);
-      Vue.set(this.pageLayout[1], 0, 6);
-      Vue.set(this.pageLayout[1], 1, 5);
+    // We can't directly set the layout array's values, because Vue will
+    // not notice the update. Instead we must go through Vue.
+    console.log(this.pages);
+    let i = 0;
+    for (let pageIndex in this.pages) {
+      let row = Math.floor(i / this.layoutCols);
+      let col = i % this.layoutCols; 
+      Vue.set(this.pageLayout[row], col, pageIndex);
+      i++;
     }
 
     // Asynchronously load the images, adding them to the pages object.
     // We use Vue.set so it knows about the new property.
     for (let pageIndex in this.pages) {
+      console.log("this.pages: ", this.pages[pageIndex]);
       loadImage(this.pages[pageIndex].path)
       .then(img => Vue.set(this.pages[pageIndex], "image", img))
       .catch(error => console.error(error));

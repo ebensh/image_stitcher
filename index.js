@@ -89,7 +89,7 @@ app.post('/upload', function(req, res) {
       pages = new Object();
       for (let path in imagePath) {
         let id = /([0-9]+)\.png/.exec(path)[1];
-        pages[id] = path;
+        pages[id].path = path;
       }
 
       console.log('Processed PDF, images:', pages);
@@ -106,10 +106,10 @@ app.post('/upload', function(req, res) {
 // Redirect to /stitcher with some demo images.
 app.get('/stitcherdemo', function(req, res) {
   pages = {
-    2: '/pages/page_02.png/demo',
-    3: '/pages/page_03.png/demo',
-    5: '/pages/page_05.png/demo',
-    6: '/pages/page_06.png/demo'
+    2: { path: '/pages/page_02.png/demo' },
+    3: { path: '/pages/page_03.png/demo' },
+    5: { path: '/pages/page_05.png/demo' },
+    6: { path: '/pages/page_06.png/demo' },
   };
   console.log('pages: ', pages);
   console.log('  in json: ', JSON.stringify(pages));
