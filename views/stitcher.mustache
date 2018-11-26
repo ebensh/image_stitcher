@@ -2,30 +2,72 @@
 <html lang="en">
 <head>
   <title>Drag-and-Drop Image Stitching</title>
-  <link rel="stylesheet" href="/public/stylesheets/stitcher.css">
+  <link rel="stylesheet" href="stitcher.css">
+  <script src="../node_modules/vue/dist/vue.js"></script>
 </head>
-{{- Triple braces to avoid escaping slashes }}
-<body>
-  <table>
-    <caption>Images from PDF</caption>
-    <tbody>
+<body onload="">
+
+  <div id="app">
+    <h3>Layout Parameters</h3>
+    <table>
       <tr>
-        <td id="small_pages">
+        <td>Number of Layout Rows</td>
+        <td><input v-model="layoutRows" @change="updateLayout" id="layout-num-rows"></td>
+      </tr><tr>
+        <td>Number of Layout Columns</td>
+        <td><input v-model="layoutCols" @change="updateLayout" id="layout-num-cols"></td>
+      </tr>
+    </table>
+
+    <h3>Layout (drag and drop to move)</h3>
+    <!--<small-page-item
+      v-for="item in pages"
+      v-bind:page="item"
+      v-bind:key="item.id">
+    </small-page-item>-->
+
+    <table>
+      <tr v-for="(row, row_index) in pageLayout">
+        <td v-for="(page_index, col_index) in row"
+            class="page_slot"
+            ondragstart="layoutDragstartHandler(event)"
+            ondragover="layoutDragoverHandler(event)"
+            ondrop="layoutDropHandler(event)"
+            :data-rowindex="row_index"
+            :data-colindex="col_index"
+            :data-pageindex="page_index">
+          <small-page-layout-img
+            v-if="page_index"
+            v-bind:pages="pages"
+            v-bind:rowindex="row_index"
+            v-bind:colindex="col_index"
+            v-bind:pageindex="page_index">
+          </small-page-layout-img>
         </td>
       </tr>
-    </tbody>
-  </table>
+    </table>
 
-  <table id="layout">
-    <caption>Layout</caption>
-    <tbody></tbody>
-  </table>
+    <h3>Joining Parameters</h3>
+    <table>
+      <tr>
+        <td>Horizontal spacing in pixels (negative for overlap)*</td>
+        <td><input v-model="stitchSpaceHorizontal" @change="updateRender" id="stitch-space-horizontal" type="text"></td>
+      </tr><tr>
+        <td>Vertical overlap in pixels (negative for overlap)*</td>
+        <td><input v-model="stitchSpaceVertical" @change="updateRender" id="stitch-space-vertical" type="text"></td>
+      </tr><tr>
+        <td>Display Scale (Set to 1.0 for final image)</td>
+        <td><input v-model="stitchScale" @change="updateRender" id="stitch-scale" type="text"></td>
+      <tr>
+        <td>* 150 pixels == 1 inch.</td>
+      </tr>
+    </table>
 
-  <h3>TODO: Spacing Configuration</h3>
+    <h3>Stitched View (Scaled Down)</h3>
 
-  <h3>Joined</h3>
-  <canvas id="combined" width="300px" height="300px" border-style="solid"></canvas>
+    <canvas id="combined" width="300px" height="300px" border-style="solid"></canvas>
+  </div>
 
-  <script src="/public/javascripts/stitcher.js"></script>
+  <script src="stitcher.js"></script>
 </body>
 </html>
