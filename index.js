@@ -5,7 +5,6 @@ const fs = require('fs');
 const iconv = require('iconv-lite');
 const mustacheExpress = require('mustache-express');
 const path = require('path');
-const PDFImage = require("pdf-image").PDFImage;
 const url = require('url');
 
 const port = process.env.PORT || 8080;   // Heroku's provided port or default.
