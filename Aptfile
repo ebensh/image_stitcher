@@ -1,4 +1,2 @@
-imagemagick
-ghostscript
-poppler-utils
+pdftocairo
 :repo:deb http://cz.archive.ubuntu.com/ubuntu artful main universe

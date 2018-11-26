@@ -56,6 +56,42 @@ app.get('/upload', function(req, res) {
   res.render('upload');
 });
 
+function pdftoimage(file, first_page, last_page){
+  let bin = 'pdftocairo';
+  let outputDirectory = path.join(__dirname, '/pages/');
+  let outputFilePrefix = path.join(outputDirectory, path.basename(file));
+  let args = ['-png', file, '-r', '150', '-f', first_page, '-l', last_page,
+      outputFilePrefix];
+
+  console.log("Running command: ", bin, args);
+
+  return new Promise((resolve, reject)=>{
+    child_process.execFile(bin, args, (error, stdout, stderr) => {
+      if (error){
+        reject(error);
+      }
+      else {
+        console.log("Processed successfully, stdout: ", stdout)
+
+        let paths = fs.readdirSync(outputDirectory);
+        console.log("Paths: ", paths);
+        paths = paths.filter(p => p.startsWith(path.basename(file)));
+        console.log("Filtered paths: ", paths);
+        
+        console.log("paths: ", paths);
+        let pages = {};
+        for (let p of paths) {
+          console.log("Path: ", p);
+          let id = /([0-9]+)\.png/.exec(p)[1];
+          pages[id] = { "path": path.join('pages/', p) };
+        }
+
+        resolve(pages);
+      }
+    });
+  });
+}
+
 app.post('/upload', function(req, res) {
   let form = new formidable.IncomingForm();
 
@@ -70,28 +106,8 @@ app.post('/upload', function(req, res) {
     console.log(`Processing ${pdfPath} from ${firstPage} to ${lastPage}`);
     // TODO: Don't block this thread! Build some kind of work queue and
     // an offline process to do the heavy-lifting.
-    // child_process.execFileSync('pdftocairo',
-    //     ['-png', pdfPath, '-r', '150', '-f', firstPage, '-l', lastPage]);
-    // var pages = fs.readdirSync(directory).filter(
-    //     filename => path.basename(filename) == basename
-    //         && filename.endsWith('.png'));
-
-    let pdfImage = new PDFImage(pdfPath,
-        {outputDirectory: path.join(__dirname, '/pages/')});
-    // This is super janky, but we want to use pdftocairo instead of
-    // imagemagick's conversion function.
-    //pdfImage.
-
-
     console.log('Processing...');
-    pdfImage.convertFile().then(function (imagePaths) {
-      // Parse the path to create a dictionary from page # to path.
-      pages = new Object();
-      for (let path in imagePath) {
-        let id = /([0-9]+)\.png/.exec(path)[1];
-        pages[id].path = path;
-      }
-
+    pdftoimage(pdfPath, firstPage, lastPage).then(function (pages) {
       console.log('Processed PDF, images:', pages);
       res.redirect(url.format({
         pathname:"/stitcher",

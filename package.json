@@ -29,12 +29,10 @@
     "http": "0.0.0",
     "mustache": "^3.0.0",
     "mustache-express": "^1.2.8",
-    "pdf-image": "^2.0.0",
     "vue": "^2.5.17"
   },
   "eslintConfig": {
     "extends": "google",
-    "rules": {
-    }
+    "rules": {}
   }
 }
