@@ -82,7 +82,7 @@ function pdftoimage(file, first_page, last_page){
         let pages = {};
         for (let p of paths) {
           console.log("Path: ", p);
-          let id = /([0-9]+)\.png/.exec(p)[1];
+          let id = parseInt(/([0-9]+)\.png/.exec(p)[1]);
           pages[id] = { "path": path.join('pages/', p) };
         }
 

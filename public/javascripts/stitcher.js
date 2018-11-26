@@ -1,7 +1,6 @@
 const kDebugging = false;
 
 function create2DArray(rows, cols) {
-  console.log("In create2DArray: ", rows, cols)
   array = Array(rows);
   for (let r = 0; r < rows; ++r) {
     array[r] = Array(cols).fill(0);
@@ -161,12 +160,12 @@ var app = new Vue({
   el: '#app',
   data: {
     pages: getPagesFromURL(),
-    layoutRows: 3,
-    layoutCols: 4,
+    layoutRows: 10,
+    layoutCols: 10,
     stitchSpaceHorizontal: -25,
     stitchSpaceVertical: -25,
     stitchScale: 0.25,
-    pageLayout: create2DArray(3, 4)
+    pageLayout: create2DArray(10, 10)
   },
   methods: {
     updateLayout: function (event) {
@@ -209,14 +208,6 @@ var app = new Vue({
     }
   },
   created() {
-    // The pages data is loaded by now. We make sure the grid is large
-    // enough (increasing by 1 row and 1 col until it is), then insert
-    // the loaded images.
-    while (this.layoutRows * this.layoutCols < this.pages.length) {
-      this.layoutRows++;
-      this.layoutCols++;
-    }
-
     // We can't directly set the layout array's values, because Vue will
     // not notice the update. Instead we must go through Vue.
     console.log(this.pages);
@@ -231,7 +222,6 @@ var app = new Vue({
     // Asynchronously load the images, adding them to the pages object.
     // We use Vue.set so it knows about the new property.
     for (let pageIndex in this.pages) {
-      console.log("this.pages: ", this.pages[pageIndex]);
       loadImage(this.pages[pageIndex].path)
       .then(img => Vue.set(this.pages[pageIndex], "image", img))
       .catch(error => console.error(error));
