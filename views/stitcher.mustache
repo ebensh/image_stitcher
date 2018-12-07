@@ -51,11 +51,11 @@
     <h3>Joining Parameters</h3>
     <table>
       <tr>
-        <td>Horizontal spacing in pixels (negative for overlap)*</td>
-        <td><input v-model="stitchSpaceHorizontal" @change="updateRender" id="stitch-space-horizontal" type="text"></td>
+        <td>Horizontal crop in pixels*</td>
+        <td><input v-model="stitchCropHorizontal" @change="updateRender" id="stitch-crop-horizontal" type="text"></td>
       </tr><tr>
-        <td>Vertical overlap in pixels (negative for overlap)*</td>
-        <td><input v-model="stitchSpaceVertical" @change="updateRender" id="stitch-space-vertical" type="text"></td>
+        <td>Vertical crop in pixels*</td>
+        <td><input v-model="stitchCropVertical" @change="updateRender" id="stitch-crop-vertical" type="text"></td>
       </tr><tr>
         <td>Display Scale (Set to 1.0 for final image)</td>
         <td><input v-model="stitchScale" @change="updateRender" id="stitch-scale" type="text"></td>

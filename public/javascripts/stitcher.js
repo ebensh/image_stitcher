@@ -77,8 +77,8 @@ function redrawCanvas() {
 
   let num_imgs_wide = app.layoutCols;
   let num_imgs_tall = app.layoutRows;
-  let spacing_horizontal = app.stitchSpaceHorizontal;
-  let spacing_vertical = app.stitchSpaceVertical;
+  let crop_horizontal = app.stitchCropHorizontal;
+  let crop_vertical = app.stitchCropVertical;
   let scale = app.stitchScale;
 
   // We need to find an image that's already loaded to get its size.
@@ -91,14 +91,20 @@ function redrawCanvas() {
     }
   }
   if (imageForSizing == null) { return; }
-  console.log(imageForSizing.naturalWidth, imageForSizing.naturalHeight);
-  let scaled_width = Math.round(scale * imageForSizing.width);
-  let scaled_height = Math.round(scale * imageForSizing.height);
-  let scaled_spacing_horizontal = Math.round(scale * spacing_horizontal);
-  let scaled_spacing_vertical = Math.round(scale * spacing_vertical);
+  console.log("Natural image size: ",
+      {'width': imageForSizing.naturalWidth,
+       'height': imageForSizing.naturalHeight});
 
-  canvas.width = num_imgs_wide * scaled_width + (num_imgs_wide - 1) * scaled_spacing_horizontal;
-  canvas.height = num_imgs_tall * scaled_height + (num_imgs_tall - 1) * scaled_spacing_vertical;
+  let sx = crop_horizontal;
+  let sy = crop_vertical;
+  let sWidth = imageForSizing.naturalWidth - 2 * crop_horizontal;
+  let sHeight = imageForSizing.naturalHeight - 2 * crop_vertical;
+
+  let dWidth = scale * sWidth;
+  let dHeight = scale * sHeight;
+
+  canvas.width = num_imgs_wide * dWidth;
+  canvas.height = num_imgs_tall * dHeight;
 
   app.pageLayout.forEach(function(row, row_index) {
     row.forEach(function(page_index, col_index) {
@@ -106,11 +112,11 @@ function redrawCanvas() {
         let img = new Image();
         img.src = app.pages[page_index].path;
 
-        let x = col_index * (scaled_width + scaled_spacing_horizontal);
-        let y = row_index * (scaled_height + scaled_spacing_vertical);
-        ctx.drawImage(img, x, y, scaled_width, scaled_height);
+        let dx = col_index * dWidth;
+        let dy = row_index * dHeight; 
+        ctx.drawImage(img, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
 
-        console.log("Drew ", img.src, " to ", x, y, scaled_width, scaled_height)
+        console.log("Drew ", img.src, " to ", dx, dy, dWidth, dHeight)
       }
     });
   });
@@ -162,8 +168,8 @@ var app = new Vue({
     pages: getPagesFromURL(),
     layoutRows: 10,
     layoutCols: 10,
-    stitchSpaceHorizontal: -25,
-    stitchSpaceVertical: -25,
+    stitchCropHorizontal: 25,
+    stitchCropVertical: 25,
     stitchScale: 0.25,
     pageLayout: create2DArray(10, 10)
   },
